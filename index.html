@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astronomy Picture of the Day</title>
+    <style>
+        
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        img { max-width: 80%; height: auto; margin-top: 20px; }
+        #errorMessage { color: red; }  
+    </style>
+</head>
+<body>
+
+<h1>NASA Astronomy Picture of the Day</h1>
+
+
+<input type="date" id="dateInput">
+<button onclick="fetchAPOD()">Get Picture</button> 
+
+<div id="apodContent">
+    <h2 id="title"></h2>
+    <p id="date"></p>
+    <img id="image" src="" alt="Astronomy Picture of the Day">
+    <p id="description"></p>
+    <p id="errorMessage"></p>
+</div>
+
+<script>
+    const apiKey = 'SSqtI1TXDIkFKtS15fiJeMWJrdNLVYOt2cgIUfnr';
+
+    // function to fetch the data
+    async function fetchAPOD() {
+        let date = document.getElementById('dateInput').value; 
+        if (date === "") {
+            // if no date itll use todays date
+            date = new Date().toISOString().split("T")[0];  // sets todays date in the date format
+        }
+        
+        
+        let url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`;
+
+        try {
+            // makes the API request
+            const response = await fetch(url); 
+            const data = await response.json();  // converts the response to JSON
+            displayAPOD(data);  // calls the function to display the data
+        } catch (error) {  
+            document.getElementById("errorMessage").textContent = "Oops! Could not fetch the data.";
+        }
+    }
+
+    // this function displays the picture, title, date and description of the selected date
+    function displayAPOD(data) {
+        document.getElementById("title").textContent = data.title;  
+        document.getElementById("date").textContent = data.date; 
+        document.getElementById("description").textContent = data.explanation;
+        
+        if (data.media_type === "image") {
+            document.getElementById("image").src = data.url;
+            document.getElementById("image").style.display = "block";  // Display the image
+        } else {
+            document.getElementById("image").style.display = "none";
+            document.getElementById("errorMessage").textContent = "Sorry, today's media isn't an image.";
+        }
+    }
+
+</script>
+
+</body>
+</html>
